@@ -1,5 +1,5 @@
 module "virtual_machine" {
-  source         = "../../modules/virtual machine"
+  source         = "../../modules/virtual_machine"
   create_rg      = true
   create_vnet    = true
   vm_name        = "test-vm"
