@@ -1,3 +1,7 @@
+variable "ssh_key" {
+  description = "Klucz publiczny SSH do logowania do VM"
+  type        = string
+}
 module "virtual_machine" {
   source         = "../../modules/virtual_machine"
   create_rg      = true
