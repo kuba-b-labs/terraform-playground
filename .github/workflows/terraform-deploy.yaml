@@ -43,7 +43,9 @@ jobs:
 
       - name: Terraform plan
         if: ${{ inputs.resource == 'Vm' }}
-        run: terraform plan
+        run: |
+          cd ./tests/virtual_machine
+          terraform plan
         env: 
           TF_VAR_ssh_key: ${{ secrets.ssh_key }}
           
