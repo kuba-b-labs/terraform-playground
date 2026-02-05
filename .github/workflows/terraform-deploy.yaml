@@ -43,6 +43,7 @@ jobs:
       - name: Terraform plan
         if: ${{ inputs.resource == 'Vm' }}
         run: |
+          ls -la
           cd ./modules/virtual_machine
           terraform plan
         env: 
