@@ -73,10 +73,7 @@ jobs:
       - name: Send Message to Discord Chat
         run: |
           set -e
-          curl  -f -X POST ${{ secrets.discord_webhook }} \
+          curl -f -X POST ${{ secrets.discord_webhook }} \
            -H "Content-Type: application/json" \
-           -d '{ "content": "
-             deployment of ${{ inputs.resource }}\n
-             status: completed"
-           }' 
+           -d '{ "content": "🚀 **Deployment of:** Vm\n✅ **Status:** completed" }'
     
