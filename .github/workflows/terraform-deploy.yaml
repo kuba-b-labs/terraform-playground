@@ -37,18 +37,21 @@ jobs:
         uses: hashicorp/setup-terraform@v3
       
       - name: Init Terraform
+        if: ${{ inputs.resource == 'Vm' }}
         run: terraform init
-        working-directory: ./infrastructure/provider
+        working-directory: ./tests/virtual_machine
 
       - name: Terraform plan
         if: ${{ inputs.resource == 'Vm' }}
-        run: |
-          cd ./tests/virtual_machine
-          terraform plan
+        run: terraform plan
         env: 
           TF_VAR_ssh_key: ${{ secrets.ssh_key }}
           
-       
+      - name: Init Terraform
+        if: ${{ inputs.resource == 'aks' }}
+        run: terraform init
+        working-directory: ./tests/aks
+        
       - name: Terraform plan
         if: ${{ inputs.resource == 'aks' }}
         run: |
