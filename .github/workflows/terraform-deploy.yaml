@@ -45,7 +45,7 @@ jobs:
         if: ${{ inputs.resource == 'Vm' }}
         run: |
           cd ./tests/virtual_machine
-          terraform plan
+          terraform plan --var 'ssh_key=${{ secrets.ssh_key }}'
         env: 
           TF_VAR_ssh_key: ${{ secrets.ssh_key }}
           
@@ -58,8 +58,5 @@ jobs:
         if: ${{ inputs.resource == 'aks' }}
         run: |
           cd ./tests/aks
-          terraform plan
-        env: 
-          TF_VAR_ssh_key: ${{ secrets.ssh_key }}
-          TF_VAR_admin_username: ${{ secrets.admin_username }}
+          terraform plan --var 'ssh_key=${{ secrets.ssh_key }}'
     
