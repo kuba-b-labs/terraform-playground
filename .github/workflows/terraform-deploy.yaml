@@ -42,13 +42,17 @@ jobs:
 
       - name: Terraform plan
         if: ${{ inputs.resource == 'Vm' }}
-        run: terraform plan -chdir ./modules/virtual_machine
+        run: |
+          cd ./modules/virtual_machine
+          terraform plan
         env: 
           TF_VAR_ssh_key: ${{ secrets.ssh_key }}
        
       - name: Terraform plan
         if: ${{ inputs.resource == 'aks' }}
-        run: terraform plan ./modules/aks
+        run: |
+          cd ./modules/aks
+          terraform plan
         env: 
           TF_VAR_ssh_key: ${{ secrets.ssh_key }}
     
