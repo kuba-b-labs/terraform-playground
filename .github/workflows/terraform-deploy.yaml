@@ -75,8 +75,8 @@ jobs:
           set -e
           curl  -f -X POST ${{ secrets.discord_webhook }} \
            -H "Content-Type: application/json" \
-           -d '{
-             "event": "deployment of ${{ inputs.resource }}",
-             "status": "completed"
+           -d '{ "content": "
+             deployment of ${{ inputs.resource }}\n
+             status: completed"
            }' 
     
