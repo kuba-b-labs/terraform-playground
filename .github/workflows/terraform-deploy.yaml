@@ -37,7 +37,7 @@ jobs:
         uses: hashicorp/setup-terraform@v3
       
       - name: Init Terraform
-        run: terraform Init
+        run: terraform init
         working-directory: ./infrastructure/provider
 
       - name: Terraform plan
