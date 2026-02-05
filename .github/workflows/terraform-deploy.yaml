@@ -15,56 +15,56 @@ permissions:
   contents: read
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    env:
-      resource: ${{ inputs.resource }}
-      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      ARM_USE_OIDC: true
+  # deploy:
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     resource: ${{ inputs.resource }}
+  #     ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  #     ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  #     ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  #     ARM_USE_OIDC: true
 
-    steps:
-      - name: Azure login
-        uses: azure/login@v2
-        with:
-          creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'
+  #   steps:
+  #     - name: Azure login
+  #       uses: azure/login@v2
+  #       with:
+  #         creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'
 
-      - name: Checkout
-        uses: actions/checkout@v6.0.2
+  #     - name: Checkout
+  #       uses: actions/checkout@v6.0.2
         
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
+  #     - name: Setup Terraform
+  #       uses: hashicorp/setup-terraform@v3
       
-      - name: Init Terraform
-        if: ${{ inputs.resource == 'Vm' }}
-        run: terraform init
-        working-directory: ./tests/virtual_machine
+  #     - name: Init Terraform
+  #       if: ${{ inputs.resource == 'Vm' }}
+  #       run: terraform init
+  #       working-directory: ./tests/virtual_machine
 
-      - name: Terraform plan
-        if: ${{ inputs.resource == 'Vm' }}
-        run: |
-          cd ./tests/virtual_machine
-          terraform plan --var 'ssh_key=${{ secrets.ssh_key }}'
-        env: 
-          TF_VAR_ssh_key: ${{ secrets.ssh_key }}
+  #     - name: Terraform plan
+  #       if: ${{ inputs.resource == 'Vm' }}
+  #       run: |
+  #         cd ./tests/virtual_machine
+  #         terraform plan --var 'ssh_key=${{ secrets.ssh_key }}'
+  #       env: 
+  #         TF_VAR_ssh_key: ${{ secrets.ssh_key }}
 
-      - name: Terraform apply
-        if: ${{ inputs.resource == 'Vm' }}
-        run: |
-          cd ./tests/virtual_machine
-          terraform apply --auto-approve --var 'ssh_key=${{ secrets.ssh_key }}'
+  #     - name: Terraform apply
+  #       if: ${{ inputs.resource == 'Vm' }}
+  #       run: |
+  #         cd ./tests/virtual_machine
+  #         terraform apply --auto-approve --var 'ssh_key=${{ secrets.ssh_key }}'
 
-      - name: Init Terraform
-        if: ${{ inputs.resource == 'aks' }}
-        run: terraform init
-        working-directory: ./tests/aks
+  #     - name: Init Terraform
+  #       if: ${{ inputs.resource == 'aks' }}
+  #       run: terraform init
+  #       working-directory: ./tests/aks
         
-      - name: Terraform plan
-        if: ${{ inputs.resource == 'aks' }}
-        run: |
-          cd ./tests/aks
-          terraform plan --var 'ssh_key=${{ secrets.ssh_key }}'
+  #     - name: Terraform plan
+  #       if: ${{ inputs.resource == 'aks' }}
+  #       run: |
+  #         cd ./tests/aks
+  #         terraform plan --var 'ssh_key=${{ secrets.ssh_key }}'
 
   send_message:
     runs-on: ubuntu-latest
