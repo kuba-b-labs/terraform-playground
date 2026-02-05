@@ -33,7 +33,7 @@ jobs:
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
-
+      - run: ls -la
       - name: Init Terraform
         run: terraform Init
         working-directory: infrastructure/provider
