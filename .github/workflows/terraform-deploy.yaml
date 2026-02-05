@@ -36,7 +36,7 @@ jobs:
 
       - name: Init Terraform
         run: terraform Init
-        working-directory: ./infrastructure/provider
+        working-directory: infrastructure/provider
 
       - name: Terraform plan
         if: ${{ inputs.resource == 'Vm' }}
