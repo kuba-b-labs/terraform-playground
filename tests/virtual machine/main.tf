@@ -5,7 +5,7 @@ module "virtual_machine" {
   vm_name        = "test-vm"
   admin_username = "kuba"
   kind           = "Linux"
-  ssh_key        = file("C:\\Users\\lwite\\.ssh\\id_ed25519.pub")
+  ssh_key        = var.ssh_key
   security_rules = [
     {
       name                       = "SSH"
