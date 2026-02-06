@@ -91,19 +91,24 @@ jobs:
         uses: azure/login@v2
         with:
           creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'
+      
       - name: Checkout
         uses: actions/checkout@v6.0.2
         
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
       
-      - name: Destroy resources - plan
+      - name: Terraform init
+        if: ${{ inputs.resource == 'Vm' }}
+        run: terraform init
+        working-directory: ./tests/virtual_machine
+        
+      - name: Destroy - plan
         if: ${{ inputs.resource == 'Vm' }}
         run: |
-          terraform init
           cd ./tests/virtual_machine
           terraform plan -destroy
-        working-directory: ./tests/virtual_machine
+          
       - name: Destroy resources - apply
         if: ${{ inputs.resource == 'Vm' }}
         run: |
