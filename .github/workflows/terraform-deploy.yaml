@@ -130,13 +130,13 @@ jobs:
         if: ${{ inputs.resource == 'aks' }}
         run: |
           cd ./tests/aks
-          terraform plan -destroy --var 'ssh_key=${{ secrets.ssh_key }}'
+          terraform plan -destroy
           
       - name: Destroy resources - apply
         if: ${{ inputs.resource == 'aks' }}
         run: |
           cd ./tests/aks
-          terraform apply -destroy -auto-approve --var 'ssh_key=${{ secrets.ssh_key }}'
+          terraform apply -destroy -auto-approve
       
   send_message_delete:
     runs-on: ubuntu-latest
