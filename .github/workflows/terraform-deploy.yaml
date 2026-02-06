@@ -70,7 +70,13 @@ jobs:
         if: ${{ inputs.resource == 'aks' }}
         run: |
           cd ./tests/aks
-          terraform plan --var 'ssh_key=${{ secrets.ssh_key }}'
+          terraform plan
+          
+      - name: Terraform plan
+        if: ${{ inputs.resource == 'aks' }}
+        run: |
+          cd ./tests/aks
+          terraform apply -auto-approve
 
   send_message_provision:
     runs-on: ubuntu-latest
