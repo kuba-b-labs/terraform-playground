@@ -72,7 +72,7 @@ jobs:
           cd ./tests/aks
           terraform plan
           
-      - name: Terraform plan
+      - name: Terraform apply
         if: ${{ inputs.resource == 'aks' }}
         run: |
           cd ./tests/aks
