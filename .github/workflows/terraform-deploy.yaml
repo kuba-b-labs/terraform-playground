@@ -87,7 +87,7 @@ jobs:
           set -e
           curl -f -X POST ${{ secrets.discord_webhook }} \
            -H "Content-Type: application/json" \
-           -d '{ "content": "🚀 **Deployment of:** Vm\n✅ **Status:** completed" }'
+           -d '{ "content": "🚀 **Deployment of:** ${{ inputs.resource }}\n✅ **Status:** completed" }'
 
   delete:
     runs-on: ubuntu-latest
@@ -120,6 +120,23 @@ jobs:
         run: |
           cd ./tests/virtual_machine
           terraform apply -destroy -auto-approve --var 'ssh_key=${{ secrets.ssh_key }}'
+
+      - name: Terraform init
+        if: ${{ inputs.resource == 'aks' }}
+        run: terraform init
+        working-directory: ./tests/aks
+        
+      - name: Destroy - plan
+        if: ${{ inputs.resource == 'aks' }}
+        run: |
+          cd ./tests/aks
+          terraform plan -destroy --var 'ssh_key=${{ secrets.ssh_key }}'
+          
+      - name: Destroy resources - apply
+        if: ${{ inputs.resource == 'aks' }}
+        run: |
+          cd ./tests/aks
+          terraform apply -destroy -auto-approve --var 'ssh_key=${{ secrets.ssh_key }}'
       
   send_message_delete:
     runs-on: ubuntu-latest
@@ -130,4 +147,4 @@ jobs:
           set -e
           curl -f -X POST ${{ secrets.discord_webhook }} \
            -H "Content-Type: application/json" \
-           -d '{ "content": "🚀 **Deletion of:** Vm\n✅ **Status:** completed" }'
+           -d '{ "content": "🚀 **Deletion of:** ${{ inputs.resource }}\n✅ **Status:** completed" }'
