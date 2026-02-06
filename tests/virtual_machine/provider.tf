@@ -4,7 +4,7 @@ terraform {
     storage_account_name = "terraformplaygroundjb104"
     container_name       = "tfstate"
     key                  = "terraform.tfstate"
-    use_oidc             = true # To jest kluczowe dla bezpieczeństwa
+    use_oidc             = true 
   }
 
   required_providers {
@@ -17,5 +17,5 @@ terraform {
 
 provider "azurerm" {
   features {}
-  use_oidc = true # Informujemy providera, by użył OIDC zamiast kluczy
+  use_oidc = true 
 }
