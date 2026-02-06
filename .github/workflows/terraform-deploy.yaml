@@ -107,13 +107,13 @@ jobs:
         if: ${{ inputs.resource == 'Vm' }}
         run: |
           cd ./tests/virtual_machine
-          terraform plan -destroy
+          terraform plan -destroy --var 'ssh_key=${{ secrets.ssh_key }}'
           
       - name: Destroy resources - apply
         if: ${{ inputs.resource == 'Vm' }}
         run: |
           cd ./tests/virtual_machine
-          terraform apply -destroy -auto-approve
+          terraform apply -destroy -auto-approve --var 'ssh_key=${{ secrets.ssh_key }}'
       
   send_message_delete:
     runs-on: ubuntu-latest
