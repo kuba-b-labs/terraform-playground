@@ -9,6 +9,12 @@ on:
         options:
         - Vm
         - aks
+      choice:
+        required: false
+        type: choice
+        options:
+        - delete
+        - provision
 
 permissions:
   id-token: write
@@ -17,13 +23,13 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    if: ${{ inputs.choice == 'provision' }}
     env:
       resource: ${{ inputs.resource }}
       ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       ARM_USE_OIDC: true
-
     steps:
       - name: Azure login
         uses: azure/login@v2
@@ -66,7 +72,7 @@ jobs:
           cd ./tests/aks
           terraform plan --var 'ssh_key=${{ secrets.ssh_key }}'
 
-  send_message:
+  send_message_provision:
     runs-on: ubuntu-latest
     needs: deploy
     steps:
@@ -76,4 +82,41 @@ jobs:
           curl -f -X POST ${{ secrets.discord_webhook }} \
            -H "Content-Type: application/json" \
            -d '{ "content": "🚀 **Deployment of:** Vm\n✅ **Status:** completed" }'
-    
+
+  delete:
+    runs-on: ubuntu-latest
+    if: ${{ inputs.choice == 'delete' }}
+    steps:
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'
+      - name: Checkout
+        uses: actions/checkout@v6.0.2
+        
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+      
+      - name: Destroy resources - plan
+        if: ${{ inputs.resource == 'Vm' }}
+        run: |
+          terraform init
+          cd ./tests/virtual_machine
+          terraform plan -destroy
+        working-directory: ./tests/virtual_machine
+      - name: Destroy resources - apply
+        if: ${{ inputs.resource == 'Vm' }}
+        run: |
+          cd ./tests/virtual_machine
+          terraform apply -destroy -auto-approve
+      
+  send_message_delete:
+    runs-on: ubuntu-latest
+    needs: delete
+    steps:
+      - name: Send Message to Discord Chat
+        run: |
+          set -e
+          curl -f -X POST ${{ secrets.discord_webhook }} \
+           -H "Content-Type: application/json" \
+           -d '{ "content": "🚀 **Deletion of:** Vm\n✅ **Status:** completed" }'
