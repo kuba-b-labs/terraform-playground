@@ -25,7 +25,7 @@ stages:
       - task: AzureCLI@2
         displayName: "Run terraform Init"
         inputs:
-          azureSubscription: 'TWOJA_NAZWA_SERVICE_CONNECTION' # MUSISZ TO DODAĆ
+          azureSubscription: 'azure_portal' # MUSISZ TO DODAĆ
           scriptType: 'bash'                                  # MUSISZ TO DODAĆ
           addSpnToEnvironment: true                           # Wymagane, aby zmienne $servicePrincipalId działały
           scriptLocation: 'inlineScript'
