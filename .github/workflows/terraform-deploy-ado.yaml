@@ -1,0 +1,35 @@
+trigger: none
+pr: none
+pool:
+  vmImage: 'ubuntu-latest'
+parameters:
+  - name: resource
+    displayName: "Wybierz zasób do utworzenia"
+    type: string
+    default: "Vm"
+    values:
+    - Vm
+    - aks
+
+stages:
+  - stage: deploy
+    displayName: "Deploy Terraform"
+    jobs:
+    - job: azureLogin
+      displayName: "Login to Azure"
+      steps:
+      - task: TerraformInstaller@1
+        inputs:
+          terraformVersion: 'latest'
+
+      - task: AzureCLI@2
+        displayName: "Run terraform Init"
+        inlineScript: |
+          # ADO wystawia dane Service Connection jako zmienne środowiskowe
+          export ARM_CLIENT_ID=$servicePrincipalId
+          export ARM_CLIENT_SECRET=$servicePrincipalKey
+          export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+          export ARM_TENANT_ID=$tenantId
+          
+          terraform init
+          terraform plan
