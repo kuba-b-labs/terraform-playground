@@ -24,12 +24,20 @@ stages:
 
       - task: AzureCLI@2
         displayName: "Run terraform Init"
-        inlineScript: |
-          # ADO wystawia dane Service Connection jako zmienne środowiskowe
-          export ARM_CLIENT_ID=$servicePrincipalId
-          export ARM_CLIENT_SECRET=$servicePrincipalKey
-          export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
-          export ARM_TENANT_ID=$tenantId
-          cd ./s/tests/virtual_machine
-          terraform init
-          terraform plan --var 'ssh_key=$(SSH_KEY)'
+        inputs:
+          azureSubscription: 'TWOJA_NAZWA_SERVICE_CONNECTION' # MUSISZ TO DODAĆ
+          scriptType: 'bash'                                  # MUSISZ TO DODAĆ
+          addSpnToEnvironment: true                           # Wymagane, aby zmienne $servicePrincipalId działały
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            export ARM_CLIENT_ID=$servicePrincipalId
+            export ARM_CLIENT_SECRET=$servicePrincipalKey
+            export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+            export ARM_TENANT_ID=$tenantId
+            
+            # Uwaga: w ADO ścieżka to zazwyczaj $(System.DefaultWorkingDirectory)
+            # Domyślnie startujesz w folderze /s, więc wystarczy:
+            cd ./tests/virtual_machine
+            
+            terraform init
+            terraform plan --var "ssh_key=$(SSH_KEY)"
