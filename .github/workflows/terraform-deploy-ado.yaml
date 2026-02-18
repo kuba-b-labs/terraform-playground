@@ -68,5 +68,5 @@ stages:
           ${{ else }}:
             workingDirectory: $(Build.SourcesDirectory)/tests/aks
           inlineScript: |
-            terraform plan -out=$(Build.BuildNumber)-${{ parameters.resource }}.tfplan
+            terraform plan -out=$(Build.BuildNumber)-${{ parameters.resource }}.tfplan --var "ssh_key=$(SSH_KEY)"
             ls -la 
