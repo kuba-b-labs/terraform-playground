@@ -59,6 +59,8 @@ stages:
           ARM_CLIENT_SECRET: $(servicePrincipalKey)
           ARM_SUBSCRIPTION_ID: $(subscriptionId)
           ARM_TENANT_ID: $(tenantId)       
+          PROVISIONING_CLIENT_ID: test
+          PROVISIONING_CLIENT_SECRET: test
         inputs:
           azureSubscription: 'azure_portal' # MUSISZ TO DODAĆ
           scriptType: 'bash'                                  # MUSISZ TO DODAĆ
