@@ -24,20 +24,42 @@ stages:
 
       - task: AzureCLI@2
         displayName: "Run terraform Init"
+        env:
+          ARM_CLIENT_ID: $(servicePrincipalId)
+          ARM_CLIENT_SECRET: $(servicePrincipalKey)
+          ARM_SUBSCRIPTION_ID: $(subscriptionId)
+          ARM_TENANT_ID: $(tenantId)
         inputs:
           azureSubscription: 'azure_portal' # MUSISZ TO DODAĆ
           scriptType: 'bash'                                  # MUSISZ TO DODAĆ
-          addSpnToEnvironment: true                           # Wymagane, aby zmienne $servicePrincipalId działały
+          addSpnToEnvironment: false                           # Wymagane, aby zmienne $servicePrincipalId działały
           scriptLocation: 'inlineScript'
+          ${{ if eq(${{ parameters.resource }}, 'Vm') }}:
+            workingDirectory: $(Build.SourcesDirectory)/tests/virtual_machine
+          ${{ else }}:
+            workingDirectory: $(Build.SourcesDirectory)/tests/aks
           inlineScript: |
-            export ARM_CLIENT_ID=$servicePrincipalId
-            export ARM_CLIENT_SECRET=$servicePrincipalKey
-            export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
-            export ARM_TENANT_ID=$tenantId
-            
             # Uwaga: w ADO ścieżka to zazwyczaj $(System.DefaultWorkingDirectory)
             # Domyślnie startujesz w folderze /s, więc wystarczy:
-            cd ./tests/virtual_machine
-            
             terraform init
-            terraform plan --var "ssh_key=$(SSH_KEY)"
+            # terraform plan --var "ssh_key=$(SSH_KEY)"
+      
+      - task: AzureCLI@2
+        displayName: "Run terraform plan"
+        env:
+          ARM_CLIENT_ID: $(servicePrincipalId)
+          ARM_CLIENT_SECRET: $(servicePrincipalKey)
+          ARM_SUBSCRIPTION_ID: $(subscriptionId)
+          ARM_TENANT_ID: $(tenantId)       
+        inputs:
+          azureSubscription: 'azure_portal' # MUSISZ TO DODAĆ
+          scriptType: 'bash'                                  # MUSISZ TO DODAĆ
+          addSpnToEnvironment: false                           # Wymagane, aby zmienne $servicePrincipalId działały
+          scriptLocation: 'inlineScript'
+          ${{ if eq(${{ parameters.resource }}, 'Vm') }}:
+            workingDirectory: $(Build.SourcesDirectory)/tests/virtual_machine
+          ${{ else }}:
+            workingDirectory: $(Build.SourcesDirectory)/tests/aks
+          inlineScript: |
+            terraform plan -out=$(Build.BuildNumber)-${{ parameters.resource }}.tfplan
+            ls -la 
