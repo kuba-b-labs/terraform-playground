@@ -72,7 +72,7 @@ stages:
             workingDirectory: $(Build.SourcesDirectory)/tests/virtual_machine
           ${{ else }}:
             workingDirectory: $(Build.SourcesDirectory)/tests/aks
-          ${{ if eq(parameters.action, 'apply' }}:
+          ${{ if eq(parameters.action, 'apply') }}:
             inlineScript: |
               set -e
               terraform plan -out=$(Build.BuildNumber)-${{ parameters.resource }}.tfplan --var "ssh_key=$(SSH_KEY)"
