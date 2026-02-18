@@ -20,7 +20,7 @@ stages:
   - stage: deploy
     jobs:
     - job: azureLogin
-      displayName: "Login to Azure"
+      displayName: "Terraform deployment"
       steps:
       - task: TerraformInstaller@1
         inputs:
@@ -97,6 +97,9 @@ stages:
           scriptLocation: 'inlineScript'
           ${{ if eq(parameters.resource, 'Vm') }}:
             workingDirectory: $(Build.SourcesDirectory)/tests/virtual_machine
+            inlineScript: |
+              set -e
+              terraform apply -auto-approve $(Build.BuildNumber)-${{ parameters.resource }}.tfplan 
           ${{ else }}:
             workingDirectory: $(Build.SourcesDirectory)/tests/aks
             inlineScript: |
