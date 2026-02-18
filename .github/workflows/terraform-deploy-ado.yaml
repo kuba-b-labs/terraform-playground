@@ -46,6 +46,7 @@ stages:
           ${{ else }}:
             workingDirectory: $(Build.SourcesDirectory)/tests/aks
           inlineScript: |
+            set -e
             # Uwaga: w ADO ścieżka to zazwyczaj $(System.DefaultWorkingDirectory)
             # Domyślnie startujesz w folderze /s, więc wystarczy:
             terraform init
@@ -68,5 +69,6 @@ stages:
           ${{ else }}:
             workingDirectory: $(Build.SourcesDirectory)/tests/aks
           inlineScript: |
+            set -e
             terraform plan -out=$(Build.BuildNumber)-${{ parameters.resource }}.tfplan --var "ssh_key=$(SSH_KEY)"
             ls -la 
