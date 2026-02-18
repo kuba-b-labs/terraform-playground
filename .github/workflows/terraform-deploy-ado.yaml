@@ -39,7 +39,7 @@ stages:
         inputs:
           azureSubscription: 'azure_portal' # MUSISZ TO DODAĆ
           scriptType: 'bash'                                  # MUSISZ TO DODAĆ
-          addSpnToEnvironment: true                           # Wymagane, aby zmienne $servicePrincipalId działały
+          addSpnToEnvironment: false                           # Wymagane, aby zmienne $servicePrincipalId działały
           scriptLocation: 'inlineScript'
           ${{ if eq(parameters.resource, 'Vm') }}:
             workingDirectory: $(Build.SourcesDirectory)/tests/virtual_machine
@@ -61,7 +61,7 @@ stages:
         inputs:
           azureSubscription: 'azure_portal' # MUSISZ TO DODAĆ
           scriptType: 'bash'                                  # MUSISZ TO DODAĆ
-          addSpnToEnvironment: true                           # Wymagane, aby zmienne $servicePrincipalId działały
+          addSpnToEnvironment: false                           # Wymagane, aby zmienne $servicePrincipalId działały
           scriptLocation: 'inlineScript'
           ${{ if eq(parameters.resource, 'Vm') }}:
             workingDirectory: $(Build.SourcesDirectory)/tests/virtual_machine
