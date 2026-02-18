@@ -22,6 +22,13 @@ stages:
         inputs:
           terraformVersion: 'latest'
 
+      - task: AzureKeyVault@2
+        inputs:
+          azureSubscription: 'azure_portal'
+          KeyVaultName: 'homelab-k8s-jb104'
+          SecretsFilter: '*'
+          RunAsPreJob: true
+
       - task: AzureCLI@2
         displayName: "Run terraform Init"
         env:
@@ -32,7 +39,7 @@ stages:
         inputs:
           azureSubscription: 'azure_portal' # MUSISZ TO DODAĆ
           scriptType: 'bash'                                  # MUSISZ TO DODAĆ
-          addSpnToEnvironment: false                           # Wymagane, aby zmienne $servicePrincipalId działały
+          addSpnToEnvironment: true                           # Wymagane, aby zmienne $servicePrincipalId działały
           scriptLocation: 'inlineScript'
           ${{ if eq(parameters.resource, 'Vm') }}:
             workingDirectory: $(Build.SourcesDirectory)/tests/virtual_machine
@@ -54,7 +61,7 @@ stages:
         inputs:
           azureSubscription: 'azure_portal' # MUSISZ TO DODAĆ
           scriptType: 'bash'                                  # MUSISZ TO DODAĆ
-          addSpnToEnvironment: false                           # Wymagane, aby zmienne $servicePrincipalId działały
+          addSpnToEnvironment: true                           # Wymagane, aby zmienne $servicePrincipalId działały
           scriptLocation: 'inlineScript'
           ${{ if eq(parameters.resource, 'Vm') }}:
             workingDirectory: $(Build.SourcesDirectory)/tests/virtual_machine
