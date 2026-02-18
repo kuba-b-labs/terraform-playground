@@ -34,7 +34,7 @@ stages:
           scriptType: 'bash'                                  # MUSISZ TO DODAĆ
           addSpnToEnvironment: false                           # Wymagane, aby zmienne $servicePrincipalId działały
           scriptLocation: 'inlineScript'
-          ${{ if eq(${{ parameters.resource }}, 'Vm') }}:
+          ${{ if eq(parameters.resource, 'Vm') }}:
             workingDirectory: $(Build.SourcesDirectory)/tests/virtual_machine
           ${{ else }}:
             workingDirectory: $(Build.SourcesDirectory)/tests/aks
@@ -56,7 +56,7 @@ stages:
           scriptType: 'bash'                                  # MUSISZ TO DODAĆ
           addSpnToEnvironment: false                           # Wymagane, aby zmienne $servicePrincipalId działały
           scriptLocation: 'inlineScript'
-          ${{ if eq(${{ parameters.resource }}, 'Vm') }}:
+          ${{ if eq(parameters.resource, 'Vm') }}:
             workingDirectory: $(Build.SourcesDirectory)/tests/virtual_machine
           ${{ else }}:
             workingDirectory: $(Build.SourcesDirectory)/tests/aks
