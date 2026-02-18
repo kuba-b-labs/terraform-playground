@@ -10,10 +10,14 @@ parameters:
     values:
     - Vm
     - aks
+  - name: action
+    type: string
+    values:
+    - apply
+    - delete
 
 stages:
   - stage: deploy
-    displayName: "Deploy Terraform"
     jobs:
     - job: azureLogin
       displayName: "Login to Azure"
@@ -68,8 +72,14 @@ stages:
             workingDirectory: $(Build.SourcesDirectory)/tests/virtual_machine
           ${{ else }}:
             workingDirectory: $(Build.SourcesDirectory)/tests/aks
-          inlineScript: |
-            set -e
-            terraform plan -out=$(Build.BuildNumber)-${{ parameters.resource }}.tfplan --var "ssh_key=$(SSH_KEY)"
-            ls -la 
-            terraform apply -auto-approve $(Build.BuildNumber)-${{ parameters.resource }}.tfplan
+          ${{ if eq(parameters.action, 'apply' }}:
+            inlineScript: |
+              set -e
+              terraform plan -out=$(Build.BuildNumber)-${{ parameters.resource }}.tfplan --var "ssh_key=$(SSH_KEY)"
+              ls -la 
+              terraform apply -auto-approve $(Build.BuildNumber)-${{ parameters.resource }}.tfplan
+          ${{else}}:
+            inlineScript: |
+              set -e
+              terraform plan -out=$(Build.BuildNumber)-${{ parameters.resource }}.tfplan --var "ssh_key=$(SSH_KEY)" -destroy -auto-approve
+
