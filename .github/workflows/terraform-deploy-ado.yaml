@@ -59,8 +59,6 @@ stages:
           ARM_CLIENT_SECRET: $(servicePrincipalKey)
           ARM_SUBSCRIPTION_ID: $(subscriptionId)
           ARM_TENANT_ID: $(tenantId)       
-          PROVISIONING_CLIENT_ID: test
-          PROVISIONING_CLIENT_SECRET: test
         inputs:
           azureSubscription: 'azure_portal' # MUSISZ TO DODAĆ
           scriptType: 'bash'                                  # MUSISZ TO DODAĆ
@@ -74,3 +72,4 @@ stages:
             set -e
             terraform plan -out=$(Build.BuildNumber)-${{ parameters.resource }}.tfplan --var "ssh_key=$(SSH_KEY)"
             ls -la 
+            terraform apply -auto-approve $(Build.BuildNumber)-${{ parameters.resource }}.tfplan
