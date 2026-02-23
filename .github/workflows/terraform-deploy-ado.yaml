@@ -15,94 +15,18 @@ parameters:
     values:
     - apply
     - delete
-
+  - name: environment
+    type: string
+    values:
+    - prod
+    - dev
 stages:
-  - stage: deploy
+  - stage: deploy-dev
+    condition: eq(parameters.environment, "dev")
     jobs:
-    - job: azureLogin
-      displayName: "Terraform deployment"
-      steps:
-      - task: TerraformInstaller@1
-        inputs:
-          terraformVersion: 'latest'
-
-      - task: AzureKeyVault@2
-        inputs:
-          azureSubscription: 'azure_portal'
-          KeyVaultName: 'homelab-k8s-jb104'
-          SecretsFilter: '*'
-          RunAsPreJob: true
-
-      - task: AzureCLI@2
-        displayName: "Run terraform Init"
-        env:
-          ARM_CLIENT_ID: $(servicePrincipalId)
-          ARM_CLIENT_SECRET: $(servicePrincipalKey)
-          ARM_SUBSCRIPTION_ID: $(subscriptionId)
-          ARM_TENANT_ID: $(tenantId)
-        inputs:
-          azureSubscription: 'azure_portal' # MUSISZ TO DODAĆ
-          scriptType: 'bash'                                  # MUSISZ TO DODAĆ
-          addSpnToEnvironment: false                           # Wymagane, aby zmienne $servicePrincipalId działały
-          scriptLocation: 'inlineScript'
-          ${{ if eq(parameters.resource, 'Vm') }}:
-            workingDirectory: $(Build.SourcesDirectory)/tests/virtual_machine
-          ${{ else }}:
-            workingDirectory: $(Build.SourcesDirectory)/tests/aks
-          inlineScript: |
-            set -e
-            # Uwaga: w ADO ścieżka to zazwyczaj $(System.DefaultWorkingDirectory)
-            # Domyślnie startujesz w folderze /s, więc wystarczy:
-            terraform init
-            # terraform plan --var "ssh_key=$(SSH_KEY)"
-      
-      - task: AzureCLI@2
-        displayName: "Run terraform plan"
-        env:
-          ARM_CLIENT_ID: $(servicePrincipalId)
-          ARM_CLIENT_SECRET: $(servicePrincipalKey)
-          ARM_SUBSCRIPTION_ID: $(subscriptionId)
-          ARM_TENANT_ID: $(tenantId)       
-        inputs:
-          azureSubscription: 'azure_portal' # MUSISZ TO DODAĆ
-          scriptType: 'bash'                                  # MUSISZ TO DODAĆ
-          addSpnToEnvironment: false                           # Wymagane, aby zmienne $servicePrincipalId działały
-          scriptLocation: 'inlineScript'
-          ${{ if eq(parameters.resource, 'Vm') }}:
-            workingDirectory: $(Build.SourcesDirectory)/tests/virtual_machine
-          ${{ else }}:
-            workingDirectory: $(Build.SourcesDirectory)/tests/aks
-          ${{ if eq(parameters.action, 'apply') }}:
-            inlineScript: |
-              set -e
-              terraform plan -out=$(Build.BuildNumber)-${{ parameters.resource }}.tfplan --var "ssh_key=$(SSH_KEY)"
-              ls -la 
-              terraform apply -auto-approve $(Build.BuildNumber)-${{ parameters.resource }}.tfplan
-          ${{else}}:
-            inlineScript: |
-              set -e
-              terraform plan -out=$(Build.BuildNumber)-${{ parameters.resource }}.tfplan --var "ssh_key=$(SSH_KEY)" -destroy
-
-      - task: AzureCLI@2
-        displayName: "Run terraform apply"
-        env:
-          ARM_CLIENT_ID: $(servicePrincipalId)
-          ARM_CLIENT_SECRET: $(servicePrincipalKey)
-          ARM_SUBSCRIPTION_ID: $(subscriptionId)
-          ARM_TENANT_ID: $(tenantId)       
-        inputs:
-          azureSubscription: 'azure_portal' # MUSISZ TO DODAĆ
-          scriptType: 'bash'                                  # MUSISZ TO DODAĆ
-          addSpnToEnvironment: false                           # Wymagane, aby zmienne $servicePrincipalId działały
-          scriptLocation: 'inlineScript'
-          ${{ if eq(parameters.resource, 'Vm') }}:
-            workingDirectory: $(Build.SourcesDirectory)/tests/virtual_machine
-            inlineScript: |
-              set -e
-              terraform apply -auto-approve $(Build.BuildNumber)-${{ parameters.resource }}.tfplan 
-          ${{ else }}:
-            workingDirectory: $(Build.SourcesDirectory)/tests/aks
-            inlineScript: |
-              set -e
-              terraform apply -auto-approve $(Build.BuildNumber)-${{ parameters.resource }}.tfplan 
-
+      - template: ../templates/terraform-apply.yaml
+  - stage: deploy-prod
+    condition: eq(parameters.environment, "prod")
+    jobs:
+      - template: ../templates/terraform-apply-approval.yaml
+    
