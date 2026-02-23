@@ -4,7 +4,7 @@ parameters:
 
 jobs:
     - job: azureLogin
-      displayName: "Terraform deployment"
+      displayName: "Terraform Plan"
       steps:
       - task: TerraformInstaller@1
         inputs:
