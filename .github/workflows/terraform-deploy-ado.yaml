@@ -12,11 +12,13 @@ parameters:
     - aks
   - name: action
     type: string
+    default: "apply"
     values:
     - apply
     - delete
   - name: environment
     type: string
+    default: "dev"
     values:
     - prod
     - dev
