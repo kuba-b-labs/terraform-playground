@@ -39,7 +39,17 @@ jobs:
             # Domyślnie startujesz w folderze /s, więc wystarczy:
             terraform init
             # terraform plan --var "ssh_key=$(SSH_KEY)"
-      
+      - script: |
+          echo "============================"
+          echo "Validating Terraform modules"
+          echo "============================"
+          terraform validate
+        displayName: "Terraform Validate"
+        ${{ if eq(parameters.resource, 'Vm') }}:
+          workingDirectory: $(Build.SourcesDirectory)/tests/virtual_machine
+        ${{ else }}:
+          workingDirectory: $(Build.SourcesDirectory)/tests/aks
+
       - task: AzureCLI@2
         displayName: "Run terraform plan"
         env:
