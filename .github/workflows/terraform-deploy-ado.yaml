@@ -21,12 +21,16 @@ parameters:
     - prod
     - dev
 stages:
-  - stage: deploy-dev
-    condition: eq(parameters.environment, "dev")
-    jobs:
-      - template: ../templates/terraform-apply.yaml
-  - stage: deploy-prod
-    condition: eq(parameters.environment, "prod")
-    jobs:
-      - template: ../templates/terraform-apply-approval.yaml
+- stage: terraformPlan
+  jobs:
+    - template: ../templates/terraform-plan.yaml
+      parameters:
+        resource: ${{ parameters.resource }}
+- stage: terraformDeploy
+  jobs:
+    - template: ../templates/terraform-apply.yaml
+      parameters:
+        environment: ${{ parameters.environment }}
+        resource: ${{ parameters.resource }}
+        action: ${{ parameters.action }}
     

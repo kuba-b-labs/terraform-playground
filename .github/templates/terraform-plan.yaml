@@ -1,3 +1,7 @@
+parameters:
+  - name: resource
+    type: string
+
 jobs:
     - job: azureLogin
       displayName: "Terraform deployment"
@@ -55,34 +59,4 @@ jobs:
           ${{ if eq(parameters.action, 'apply') }}:
             inlineScript: |
               set -e
-              terraform plan -out=$(Build.BuildNumber)-${{ parameters.resource }}.tfplan --var "ssh_key=$(SSH_KEY)"
-              ls -la 
-              terraform apply -auto-approve $(Build.BuildNumber)-${{ parameters.resource }}.tfplan
-          ${{else}}:
-            inlineScript: |
-              set -e
               terraform plan -out=$(Build.BuildNumber)-${{ parameters.resource }}.tfplan --var "ssh_key=$(SSH_KEY)" -destroy
-
-      - task: AzureCLI@2
-        displayName: "Run terraform apply"
-        env:
-          ARM_CLIENT_ID: $(servicePrincipalId)
-          ARM_CLIENT_SECRET: $(servicePrincipalKey)
-          ARM_SUBSCRIPTION_ID: $(subscriptionId)
-          ARM_TENANT_ID: $(tenantId)       
-        inputs:
-          azureSubscription: 'azure_portal' # MUSISZ TO DODAĆ
-          scriptType: 'bash'                                  # MUSISZ TO DODAĆ
-          addSpnToEnvironment: false                           # Wymagane, aby zmienne $servicePrincipalId działały
-          scriptLocation: 'inlineScript'
-          ${{ if eq(parameters.resource, 'Vm') }}:
-            workingDirectory: $(Build.SourcesDirectory)/tests/virtual_machine
-            inlineScript: |
-              set -e
-              terraform apply -auto-approve $(Build.BuildNumber)-${{ parameters.resource }}.tfplan 
-          ${{ else }}:
-            workingDirectory: $(Build.SourcesDirectory)/tests/aks
-            inlineScript: |
-              set -e
-              terraform apply -auto-approve $(Build.BuildNumber)-${{ parameters.resource }}.tfplan 
-

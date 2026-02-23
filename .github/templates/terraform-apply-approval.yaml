@@ -1,6 +1,16 @@
+parameters:
+  - name: action
+    type: string
+  - name: environment
+    type: string
+  - name: resource
+    type: string
+
+
 jobs:
     - deployment: terraformApplyProd
       displayName: "Terraform deployment"
+      environment: ${{ parameters.environment }}
       strategy:
         runOnce:
           deploy:
