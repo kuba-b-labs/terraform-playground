@@ -58,5 +58,4 @@ jobs:
             workingDirectory: $(Build.SourcesDirectory)/tests/aks
           inlineScript: |
             set -e
-            if [[ ]]
             terraform plan -out=$(Build.BuildNumber)-${{ parameters.resource }}.tfplan --var "ssh_key=$(SSH_KEY)" 
