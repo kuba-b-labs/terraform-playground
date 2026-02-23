@@ -30,7 +30,7 @@ stages:
         resource: ${{ parameters.resource }}
 - stage: terraformDeploy
   jobs:
-    - template: ../templates/terraform-apply.yaml
+    - template: ../templates/terraform-apply-approval.yaml
       parameters:
         environment: ${{ parameters.environment }}
         resource: ${{ parameters.resource }}
