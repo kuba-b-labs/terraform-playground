@@ -39,3 +39,4 @@ environments/dev/.terraform.lock.hcl
 environments/dev/provider.tf
 environments/prod/.terraform.lock.hcl
 environments/prod/provider.tf
+tests/aks/.terraform.lock.hcl

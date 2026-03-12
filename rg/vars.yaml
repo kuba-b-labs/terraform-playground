@@ -1,0 +1,13 @@
+variables:
+  - name: service_connection
+    value: azure-portal
+  - name: keyvault
+    value: homelab-k8s-jb104
+  - name: backend_subscription_id
+    value: fc40c352-efc4-428a-af5d-d820476f6bea
+  - name: backend_sa
+    value: terraformplaygroundjb104 
+  - name: backend_rg
+    value: homelab-k8s
+  - name: backend_container
+    value: rg1

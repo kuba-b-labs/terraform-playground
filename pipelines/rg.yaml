@@ -1,0 +1,113 @@
+pr: none
+trigger: none
+parameters:
+- name: subscription_id
+  type: string
+- name: environment
+  type: string
+  values:
+  - dev
+  - prod
+- name: action
+  type: string
+  values:
+  - plan
+  - apply
+  - destroy
+
+variables:
+  - template: /rg/vars.yaml
+stages:
+  - stage: deploy rg
+    jobs:
+      - deployment: rg deployment
+        displayName: "Resource Group deployment"
+        environment: ${{ parameters.environment }}
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+              - checkout: self
+              - task: AzureKeyVault@2
+                inputs:
+                  azureSubscription: $(service_connection)
+                  KeyVaultName: $(keyvault)
+                  RunAsPreJob: true
+            
+              - task: AzureCLI@2
+                displayName: "Run terraform Init"
+                env:
+                  ARM_CLIENT_ID: $(servicePrincipalId)
+                  ARM_CLIENT_SECRET: $(servicePrincipalKey)
+                  ARM_SUBSCRIPTION_ID: $(subscriptionId)
+                  ARM_TENANT_ID: $(tenantId)
+                inputs:
+                  azureSubscription: $(service_connection)
+                  scriptType: 'bash'                                 
+                  addSpnToEnvironment: false                        
+                  scriptLocation: 'inlineScript'
+                  ${{ if eq(parameters.resource, 'Vm') }}:
+                    workingDirectory: $(Build.SourcesDirectory)/rg
+                  ${{ else }}:
+                    workingDirectory: $(Build.SourcesDirectory)/tests/aks
+                  inlineScript: |
+                    set -e
+                    terraform init \
+                      -backend-config=storage_account_name=$(backend_sa) \
+                      -backend-config=container_name=$(backend_container) \
+                      -backend-config=key="rg.tfstate" \
+                      -backend-config=resource_group_name=$(backend_rg) \
+                      -backend-config=subscription_id=$(backend_subscription_id) \
+                      -backend-config=tenant_id:=$(tenantId) \
+                      -backend-config=client_id=$(servicePrincipalId) \
+                      -backend-config=client_secret=$(servicePrincipalKey) \
+                      -reconfigure
+                    
+              - displayName: "Validate"
+                workingDirectory: $(Build.SourcesDirectory)/rg
+                script: |
+                  terraform validate
+
+              - task: AzureCLI@2
+                displayName: plan
+                workingDirectory: $(Build.SourcesDirectory)/rg
+                env:
+                  ARM_CLIENT_ID: $(servicePrincipalId)
+                  ARM_CLIENT_SECRET: $(servicePrincipalKey)
+                  ARM_SUBSCRIPTION_ID: $(subscriptionId)
+                  ARM_TENANT_ID: $(tenantId)
+                inputs:
+                  azureSubscription: $(service_connection)
+                  scriptType: 'bash'
+                  addSpnToEnvironment: false
+                  visibleAzLogin: false
+                  scriptLocation: 'inlineScript'
+                  workingDirectory: $(Build.SourcesDirectory)/rg
+                  ${{ if eq(parameters.action, 'destroy') }}:
+                    inlineScript: |
+                      set -e
+                      terraform plan -out="$(Build.BuildNumber)-rg.tfplan" -destroy
+                  ${{else}}:
+                    inlineScript: |
+                      set -e
+                      terraform plan -out="$(Build.BuildNumber)-rg.tfplan"
+              
+              - task: AzureCLI@2
+                displayName: "Apply - ${{ (parameters.action }}"
+                env:
+                  ARM_CLIENT_ID: $(servicePrincipalId)
+                  ARM_CLIENT_SECRET: $(servicePrincipalKey)
+                  ARM_SUBSCRIPTION_ID: $(subscriptionId)
+                  ARM_TENANT_ID: $(tenantId)
+                inputs:
+                  azureSubscription: $(service_connection)
+                  scriptType: 'bash'                              
+                  addSpnToEnvironment: false                         
+                  scriptLocation: 'inlineScript'
+                  visibleAzLogin: false
+                  workingDirectory: $(Build.SourcesDirectory)/rg
+                  inlineScript: |
+                    set -e
+                    terraform apply "$(Build.BuildNumber)-rg.tfplan"
+                  
+                
