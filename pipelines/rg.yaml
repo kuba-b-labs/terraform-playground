@@ -20,7 +20,7 @@ variables:
 stages:
   - stage: deploy rg
     jobs:
-      - deployment: rg deployment
+      - deployment: rg_deployment
         displayName: "Resource Group deployment"
         environment: ${{ parameters.environment }}
         strategy:
