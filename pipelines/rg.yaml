@@ -18,7 +18,7 @@ parameters:
 variables:
   - template: /rg/vars.yaml
 stages:
-  - stage: deploy rg
+  - stage: deploy_rg
     jobs:
       - deployment: rg_deployment
         displayName: "Resource Group deployment"
