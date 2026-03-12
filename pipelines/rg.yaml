@@ -18,6 +18,73 @@ parameters:
 variables:
   - template: /rg/vars.yaml
 stages:
+  - stage: plan_rg
+    jobs:
+            - job: plan_rg
+              displayName: "Plan rg creation"
+              steps:
+              - task: AzureKeyVault@2
+                inputs:
+                  azureSubscription: $(service_connection)
+                  KeyVaultName: $(keyvault)
+                  RunAsPreJob: true
+              - task: TerraformInstaller@1
+                inputs:
+                  terraformVersion: 'latest'
+              - task: AzureCLI@2
+                displayName: "Run terraform Init"
+                env:
+                  ARM_CLIENT_ID: $(servicePrincipalId)
+                  ARM_CLIENT_SECRET: $(servicePrincipalKey)
+                  ARM_SUBSCRIPTION_ID: $(subscriptionId)
+                  ARM_TENANT_ID: $(tenantId)
+                inputs:
+                  azureSubscription: $(service_connection)
+                  scriptType: 'bash'                                 
+                  addSpnToEnvironment: false                        
+                  scriptLocation: 'inlineScript'
+                  workingDirectory: $(Build.SourcesDirectory)/rg
+                  inlineScript: |
+                    set -e
+                    terraform init \
+                      -backend-config=storage_account_name=$(backend_sa) \
+                      -backend-config=container_name=$(backend_container) \
+                      -backend-config=key="rg.tfstate" \
+                      -backend-config=resource_group_name=$(backend_rg) \
+                      -backend-config=subscription_id=$(backend_subscription_id) \
+                      -backend-config=tenant_id=$(tenantId) \
+                      -backend-config=client_id=$(servicePrincipalId) \
+                      -backend-config=client_secret=$(servicePrincipalKey) \
+                      -reconfigure
+                    
+              - script: |
+                  terraform validate
+                displayName: "Validate"
+                workingDirectory: $(Build.SourcesDirectory)/rg
+
+
+              - task: AzureCLI@2
+                displayName: plan
+                env:
+                  ARM_CLIENT_ID: $(servicePrincipalId)
+                  ARM_CLIENT_SECRET: $(servicePrincipalKey)
+                  ARM_SUBSCRIPTION_ID: $(subscriptionId)
+                  ARM_TENANT_ID: $(tenantId)
+                inputs:
+                  azureSubscription: $(service_connection)
+                  scriptType: 'bash'
+                  addSpnToEnvironment: false
+                  visibleAzLogin: false
+                  scriptLocation: 'inlineScript'
+                  workingDirectory: $(Build.SourcesDirectory)/rg
+                  ${{ if eq(parameters.action, 'destroy') }}:
+                    inlineScript: |
+                      set -e
+                      terraform plan -out="$(Build.BuildNumber)-rg.tfplan" -destroy
+                  ${{else}}:
+                    inlineScript: |
+                      set -e
+                      terraform plan -out="$(Build.BuildNumber)-rg.tfplan"        
   - stage: deploy_rg
     jobs:
       - deployment: rg_deployment
