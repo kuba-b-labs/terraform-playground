@@ -46,10 +46,7 @@ stages:
                   scriptType: 'bash'                                 
                   addSpnToEnvironment: false                        
                   scriptLocation: 'inlineScript'
-                  ${{ if eq(parameters.resource, 'Vm') }}:
-                    workingDirectory: $(Build.SourcesDirectory)/rg
-                  ${{ else }}:
-                    workingDirectory: $(Build.SourcesDirectory)/tests/aks
+                  workingDirectory: $(Build.SourcesDirectory)/rg
                   inlineScript: |
                     set -e
                     terraform init \
