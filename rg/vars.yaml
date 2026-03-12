@@ -1,6 +1,6 @@
 variables:
   - name: service_connection
-    value: azure-portal
+    value: azure_portal
   - name: keyvault
     value: homelab-k8s-jb104
   - name: backend_subscription_id
