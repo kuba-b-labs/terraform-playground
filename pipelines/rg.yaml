@@ -33,7 +33,9 @@ stages:
                   azureSubscription: $(service_connection)
                   KeyVaultName: $(keyvault)
                   RunAsPreJob: true
-            
+              - task: TerraformInstaller@1
+                inputs:
+                  terraformVersion: 'latest'
               - task: AzureCLI@2
                 displayName: "Run terraform Init"
                 env:
