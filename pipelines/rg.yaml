@@ -57,7 +57,7 @@ stages:
                       -backend-config=key="rg.tfstate" \
                       -backend-config=resource_group_name=$(backend_rg) \
                       -backend-config=subscription_id=$(backend_subscription_id) \
-                      -backend-config=tenant_id:=$(tenantId) \
+                      -backend-config=tenant_id=$(tenantId) \
                       -backend-config=client_id=$(servicePrincipalId) \
                       -backend-config=client_secret=$(servicePrincipalKey) \
                       -reconfigure
