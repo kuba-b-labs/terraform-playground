@@ -163,11 +163,7 @@ stages:
               #       inlineScript: |
               #         set -e
               #         terraform plan -out="$(Build.BuildNumber)-rg.tfplan"
-              - task: DownloadPipelineArtifact@2
-                inputs:
-                  buildType: 'current'
-                  artifactName: '*'
-                  targetPath: '$(Build.SourcesDirectory)/rg'
+
               - task: AzureCLI@2
                 displayName: "Apply - ${{ parameters.action }}"
                 env:
