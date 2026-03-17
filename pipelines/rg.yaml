@@ -89,9 +89,8 @@ stages:
 
               - task: PublishPipelineArtifact@1
                 inputs:
-                  targetPath: '$(Pipeline.Workspace)'
-                  artifact: '$(Build.BuildNumber)-rg.tfplan'
-                  publishLocation: 'pipeline'
+                  targetPath: '$(Build.SourcesDirectory)/rg/$(Build.BuildNumber)-rg.tfplan'
+                  artifact: 'terraform-plan'
                   
   - stage: deploy_rg
     jobs:
@@ -107,8 +106,8 @@ stages:
               - download: none
               - task: DownloadPipelineArtifact@2
                 inputs:
-                  artifact: '$(Build.BuildNumber)-rg.tfplan'
-                  path: $(Build.SourcesDirectory)
+                  artifact: 'terraform-plan'
+                  path: '$(Pipeline.Workspace)'
               - task: AzureKeyVault@2
                 inputs:
                   azureSubscription: $(service_connection)
@@ -185,7 +184,7 @@ stages:
                   addSpnToEnvironment: false                         
                   scriptLocation: 'inlineScript'
                   visibleAzLogin: false
-                  workingDirectory: $(Build.SourcesDirectory)/rg
+                  workingDirectory: $(Pipeline.Workspace)
                   inlineScript: |
                     set -e
                     ls -lR $(Build.SourcesDirectory)
