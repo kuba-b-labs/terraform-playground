@@ -166,8 +166,8 @@ stages:
               - task: DownloadPipelineArtifact@2
                 inputs:
                   buildType: 'current'
-                  artifactName: '$(Build.BuildNumber)-rg.tfplan'
-                  targetPath: '$(Build.SourcesDirectory)/rg'              
+                  artifactName: '*'
+                  targetPath: '$(Build.SourcesDirectory)/rg'
               - task: AzureCLI@2
                 displayName: "Apply - ${{ parameters.action }}"
                 env:
