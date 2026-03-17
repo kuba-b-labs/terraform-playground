@@ -103,6 +103,12 @@ stages:
             deploy:
               steps:
               - checkout: self
+
+              - download: none
+              - task: DownloadPipelineArtifact@2
+                inputs:
+                  artifact: '$(Build.BuildNumber)-rg.tfplan'
+                  path: $(Build.SourcesDirectory)/rg
               - task: AzureKeyVault@2
                 inputs:
                   azureSubscription: $(service_connection)
