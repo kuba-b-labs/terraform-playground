@@ -118,6 +118,32 @@ stages:
                   terraformVersion: 'latest'
 
               - task: AzureCLI@2
+                displayName: "Run terraform Init"
+                env:
+                  ARM_CLIENT_ID: $(servicePrincipalId)
+                  ARM_CLIENT_SECRET: $(servicePrincipalKey)
+                  ARM_SUBSCRIPTION_ID: $(subscriptionId)
+                  ARM_TENANT_ID: $(tenantId)
+                inputs:
+                  azureSubscription: $(service_connection)
+                  scriptType: 'bash'                                 
+                  addSpnToEnvironment: false                        
+                  scriptLocation: 'inlineScript'
+                  workingDirectory: $(Build.SourcesDirectory)/rg
+                  inlineScript: |
+                    set -e
+                    terraform init \
+                      -backend-config=storage_account_name=$(backend_sa) \
+                      -backend-config=container_name=$(backend_container) \
+                      -backend-config=key="rg.tfstate" \
+                      -backend-config=resource_group_name=$(backend_rg) \
+                      -backend-config=subscription_id=$(backend_subscription_id) \
+                      -backend-config=tenant_id=$(tenantId) \
+                      -backend-config=client_id=$(servicePrincipalId) \
+                      -backend-config=client_secret=$(servicePrincipalKey) \
+                      -reconfigure
+                      
+              - task: AzureCLI@2
                 displayName: "Apply - ${{ parameters.action }}"
                 env:
                   ARM_CLIENT_ID: $(servicePrincipalId)
