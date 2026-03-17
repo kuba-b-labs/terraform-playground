@@ -141,29 +141,33 @@ stages:
                 workingDirectory: $(Build.SourcesDirectory)/rg
 
 
-              - task: AzureCLI@2
-                displayName: plan
-                env:
-                  ARM_CLIENT_ID: $(servicePrincipalId)
-                  ARM_CLIENT_SECRET: $(servicePrincipalKey)
-                  ARM_SUBSCRIPTION_ID: $(subscriptionId)
-                  ARM_TENANT_ID: $(tenantId)
+              # - task: AzureCLI@2
+              #   displayName: plan
+              #   env:
+              #     ARM_CLIENT_ID: $(servicePrincipalId)
+              #     ARM_CLIENT_SECRET: $(servicePrincipalKey)
+              #     ARM_SUBSCRIPTION_ID: $(subscriptionId)
+              #     ARM_TENANT_ID: $(tenantId)
+              #   inputs:
+              #     azureSubscription: $(service_connection)
+              #     scriptType: 'bash'
+              #     addSpnToEnvironment: false
+              #     visibleAzLogin: false
+              #     scriptLocation: 'inlineScript'
+              #     workingDirectory: $(Build.SourcesDirectory)/rg
+              #     ${{ if eq(parameters.action, 'destroy') }}:
+              #       inlineScript: |
+              #         set -e
+              #         terraform plan -out="$(Build.BuildNumber)-rg.tfplan" -destroy
+              #     ${{else}}:
+              #       inlineScript: |
+              #         set -e
+              #         terraform plan -out="$(Build.BuildNumber)-rg.tfplan"
+              - task: DownloadPipelineArtifact@2
                 inputs:
-                  azureSubscription: $(service_connection)
-                  scriptType: 'bash'
-                  addSpnToEnvironment: false
-                  visibleAzLogin: false
-                  scriptLocation: 'inlineScript'
-                  workingDirectory: $(Build.SourcesDirectory)/rg
-                  ${{ if eq(parameters.action, 'destroy') }}:
-                    inlineScript: |
-                      set -e
-                      terraform plan -out="$(Build.BuildNumber)-rg.tfplan" -destroy
-                  ${{else}}:
-                    inlineScript: |
-                      set -e
-                      terraform plan -out="$(Build.BuildNumber)-rg.tfplan"
-              
+                  buildType: 'current'
+                  artifactName: '$(Build.BuildNumber)-rg.tfplan'
+                  targetPath: '$(Build.SourcesDirectory)/rg'              
               - task: AzureCLI@2
                 displayName: "Apply - ${{ parameters.action }}"
                 env:
@@ -182,4 +186,3 @@ stages:
                     set -e
                     terraform apply "$(Build.BuildNumber)-rg.tfplan"
                   
-                
