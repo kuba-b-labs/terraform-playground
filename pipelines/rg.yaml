@@ -89,7 +89,7 @@ stages:
 
               - task: PublishPipelineArtifact@1
                 inputs:
-                  targetPath: '$(Build.SourcesDirectory)/rg'
+                  targetPath: '$(Build.SourcesDirectory)/rg/$(Build.BuildNumber)-rg.tfplan'
                   artifact: 'terraform-plan'
                   
   - stage: deploy_rg
