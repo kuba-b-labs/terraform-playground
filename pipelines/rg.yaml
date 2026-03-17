@@ -188,5 +188,6 @@ stages:
                   workingDirectory: $(Build.SourcesDirectory)/rg
                   inlineScript: |
                     set -e
+                    ls -lR $(Build.SourcesDirectory)
                     terraform apply "$(Build.BuildNumber)-rg.tfplan"
                   
