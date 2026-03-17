@@ -108,7 +108,7 @@ stages:
               - task: DownloadPipelineArtifact@2
                 inputs:
                   artifact: '$(Build.BuildNumber)-rg.tfplan'
-                  path: $(Build.SourcesDirectory)/rg
+                  path: $(Build.SourcesDirectory)
               - task: AzureKeyVault@2
                 inputs:
                   azureSubscription: $(service_connection)
