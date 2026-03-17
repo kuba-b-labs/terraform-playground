@@ -84,7 +84,13 @@ stages:
                   ${{else}}:
                     inlineScript: |
                       set -e
-                      terraform plan -out="$(Build.BuildNumber)-rg.tfplan"        
+                      terraform plan -out="$(Build.BuildNumber)-rg.tfplan"     
+                         
+              - task: PublishPipelineArtifact@1
+                inputs:
+                  targetPath: '$(Pipeline.Workspace)'
+                  artifact: '$(Build.BuildNumber)-rg.tfplan'
+                  publishLocation: 'pipeline'
   - stage: deploy_rg
     jobs:
       - deployment: rg_deployment
