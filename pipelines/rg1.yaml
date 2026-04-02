@@ -187,6 +187,7 @@ stages:
     - deploy_rg
     condition: |
       or(
+        failed('plan_rg'),
         and(canceled(), eq('${{ parameters.action }}', 'apply')),
         and(failed('deploy_rg'), eq('${{ parameters.action }}', 'apply'))
       )
