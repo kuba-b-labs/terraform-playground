@@ -186,8 +186,8 @@ stages:
     - deploy_rg
     condition: |
       or(
-        canceled(),
-        failed('deploy_rg')
+        and(canceled(), eq('${{ parameters.action }}', 'apply')),
+        and(failed('deploy_rg'), eq('${{ parameters.action }}', 'apply'))
       )
     jobs:
       - job: cleanup
