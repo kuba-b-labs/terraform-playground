@@ -186,12 +186,10 @@ stages:
     - plan_rg
     - deploy_rg
     condition: |
-      or(
-        and(failed('plan_rg'), eq('${{ parameters.action }}', 'apply')),
-        and(canceled(), eq('${{ parameters.action }}', 'apply')),
-        and(failed('deploy_rg'), eq('${{ parameters.action }}', 'apply'))
+      and(
+        eq('${{ parameters.action }}', 'apply'),
+        or(failed(), canceled())
       )
-    jobs:
       - job: cleanup
         variables:
           test: $[stageDependencies.plan_rg.plan_rg.outputs['set_var.test']]
