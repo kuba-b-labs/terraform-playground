@@ -190,6 +190,7 @@ stages:
         eq('${{ parameters.action }}', 'apply'),
         or(failed(), canceled())
       )
+    jobs:
       - job: cleanup
         variables:
           test: $[stageDependencies.plan_rg.plan_rg.outputs['set_var.test']]
