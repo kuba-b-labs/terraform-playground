@@ -181,7 +181,9 @@ stages:
                     set -e
                     terraform apply "$(Build.BuildNumber)-rg.tfplan"
   - stage: canceled
-    dependsOn: plan_rg
+    dependsOn: 
+    - plan_rg
+    - deploy_rg
     condition: |
       and(
         canceled(),
