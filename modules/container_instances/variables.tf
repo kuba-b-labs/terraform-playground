@@ -98,3 +98,8 @@ variable "tags_container_group" {
   type        = map(string)
   default     = {}
 }
+variable "subnet_id" {
+  description = "id of the delegated subnet of a vnet for container group"
+  type        = list(string)
+  default      = []
+}
