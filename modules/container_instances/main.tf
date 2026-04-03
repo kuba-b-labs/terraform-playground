@@ -25,6 +25,7 @@ resource "azurerm_container_group" "this" {
   os_type             = var.kind
   restart_policy      = "OnFailure"
   dns_name_label      = coalesce(var.dns_label, "container1-${local.env}")
+  subnet_ids          = var.subnet_id ? var.subnet_id : []
   container {
     name   = var.container_name
     cpu    = coalesce(var.cpu, 1)
