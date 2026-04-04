@@ -1,9 +1,9 @@
 output "resource_group_name" {
-  value = azurerm_resource_group.this[0].name
+  value = local.create_rg == 1 ? azurerm_resource_group.this[0].name : null
 }
 
 output "resource_group_location" {
-  value = azurerm_resource_group.this[0].location
+  value = local.create_rg == 1 ? azurerm_resource_group.this[0].location : null
 }
 
 output "resource_group_count" {
