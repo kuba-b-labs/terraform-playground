@@ -33,7 +33,7 @@ resource "azurerm_subnet" "this" {
 }
 resource "azurerm_public_ip" "this" {
   name                = "public-ip"
-  allocation_method   = "Dynamic"
+  allocation_method   = "Static"
   location            = local.region
   resource_group_name = local.rg_name
   sku                 = "Standard"
