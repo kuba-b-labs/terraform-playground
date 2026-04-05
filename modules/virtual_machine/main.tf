@@ -36,7 +36,7 @@ resource "azurerm_public_ip" "this" {
   allocation_method   = "Dynamic"
   location            = local.region
   resource_group_name = local.rg_name
-  sku                 = "Basic"
+  sku                 = "Standard"
   depends_on = [ azurerm_resource_group.this ]
 }
 resource "azurerm_network_interface" "this" {
