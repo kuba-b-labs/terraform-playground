@@ -29,6 +29,7 @@ resource "azurerm_subnet" "this" {
   resource_group_name  = local.rg_name
   virtual_network_name = azurerm_virtual_network.this[0].name
   address_prefixes     = var.prefix
+  service_endpoints    = ["Microsoft.Storage"]
   depends_on = [ azurerm_resource_group.this ]
 }
 resource "azurerm_public_ip" "this" {
