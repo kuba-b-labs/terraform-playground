@@ -150,3 +150,7 @@ variable "security_rules" {
   }))
   default = []
 }
+variable "priority" {
+  type = string
+  default = ""
+}
