@@ -87,6 +87,7 @@ resource "azurerm_linux_virtual_machine" "this" {
   resource_group_name = local.rg_name
   location            = local.region
   size                = var.vm_size
+  priority            = var.priority
   network_interface_ids = [
     azurerm_network_interface.this.id
   ]
