@@ -88,6 +88,7 @@ resource "azurerm_linux_virtual_machine" "this" {
   location            = local.region
   size                = var.vm_size
   priority            = var.priority
+  eviction_policy     = var.priority != "" ? "Deallocate": null
   network_interface_ids = [
     azurerm_network_interface.this.id
   ]
